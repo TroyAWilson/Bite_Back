@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://h628nnvux3cw"]
+
+[ext_resource type="Script" path="res://scenes/enemy.gd" id="1_goghg"]
+[ext_resource type="Texture2D" uid="uid://cd78su3q0in7a" path="res://sprites/shadow.png" id="1_lahpd"]
+[ext_resource type="Texture2D" uid="uid://bgixruh46bjxj" path="res://sprites/hand.png" id="2_spmrs"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_sco02"]
+radius = 33.0165
+height = 87.9941
+
+[node name="Enemy" type="CharacterBody2D"]
+script = ExtResource("1_goghg")
+
+[node name="shadow" type="Sprite2D" parent="."]
+scale = Vector2(3, 3)
+texture = ExtResource("1_lahpd")
+
+[node name="hand" type="Sprite2D" parent="."]
+z_index = 5
+position = Vector2(2, -22)
+scale = Vector2(3, 3)
+texture = ExtResource("2_spmrs")
+hframes = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-2, 15)
+rotation = -1.57356
+shape = SubResource("CapsuleShape2D_sco02")
+disabled = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
