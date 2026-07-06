@@ -1,8 +1,9 @@
-[gd_scene load_steps=16 format=3 uid="uid://bll48klk0a8e4"]
+[gd_scene load_steps=18 format=3 uid="uid://bll48klk0a8e4"]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_pk40d"]
 [ext_resource type="Texture2D" uid="uid://b0nacavhwcuva" path="res://sprites/ant-master.png" id="2_cffoy"]
 [ext_resource type="Texture2D" uid="uid://dovadnmkm2hga" path="res://sprites/dust.png" id="3_lmic4"]
+[ext_resource type="Script" path="res://scripts/camera_2d.gd" id="4_t1lbf"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_eplvc"]
 radius = 5.0
@@ -442,11 +443,28 @@ tracks/5/keys = {
 "values": [false]
 }
 
+[sub_resource type="Animation" id="Animation_7nc1k"]
+resource_name = "die"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [105]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_44wk6"]
 _data = {
 "RESET": SubResource("Animation_37mxs"),
 "attack_L": SubResource("Animation_3nerg"),
 "attack_R": SubResource("Animation_twpa8"),
+"die": SubResource("Animation_7nc1k"),
 "idle": SubResource("Animation_5460u"),
 "run_down": SubResource("Animation_2rd71"),
 "run_left": SubResource("Animation_tb5ud"),
@@ -486,6 +504,7 @@ autoplay = "idle"
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(3, 3)
+script = ExtResource("4_t1lbf")
 
 [node name="hurtbox" type="Area2D" parent="."]
 
@@ -494,4 +513,36 @@ position = Vector2(10, 0)
 shape = SubResource("RectangleShape2D_sefh2")
 debug_color = Color(0.877966, 0.341187, 0, 0.42)
 
+[node name="you_died2" type="RichTextLabel" parent="."]
+visible = false
+z_index = 10
+offset_left = -94.0
+offset_top = -44.0
+offset_right = 146.0
+offset_bottom = 11.0
+bbcode_enabled = true
+text = "[font_size=40][color=black][wave][b] You Died"
+fit_content = true
+
+[node name="you_died" type="RichTextLabel" parent="."]
+visible = false
+z_index = 10
+offset_left = -96.0
+offset_top = -47.0
+offset_right = 133.0
+offset_bottom = 63.0
+bbcode_enabled = true
+text = "[font_size=40][color=#ac3232][wave][b] You Died"
+fit_content = true
+
+[node name="Restart" type="Button" parent="."]
+visible = false
+z_index = 10
+offset_left = -36.0
+offset_top = 13.0
+offset_right = 36.0
+offset_bottom = 44.0
+text = "Restart?"
+
 [connection signal="body_entered" from="hurtbox" to="." method="_on_hurtbox_body_entered"]
+[connection signal="pressed" from="Restart" to="." method="_on_restart_pressed"]

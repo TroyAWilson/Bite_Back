@@ -1,18 +1,23 @@
 extends CharacterBody2D
 
 @export var player : CharacterBody2D
-const SPEED := 100
 
 @onready var shadow := $shadow
 @onready var hand := $hand
 @onready var col := $CollisionShape2D
+@onready var AP := $AnimationPlayer
+
+const SPEED := 100
 
 var pursue := false
 var looping := false
 var enemyHealth := 10
 var dead := false
+var playerCamera : Camera2D
 
 func _ready() -> void:
+	playerCamera = player.get_node("Camera2D")
+	
 	hand.visible = false
 	shadow.modulate.a = 0.0
 	#_atk_loop()
@@ -71,6 +76,10 @@ func _slam() -> void:
 	
 	var slam_tween := create_tween()
 	slam_tween.tween_property(hand, "position:y", 0, 0.08)
+	AP.play('slam')
+	screenShake() 
+	await AP.animation_finished
+	AP.play('idle')
 	
 func _retract() -> void:
 	var tween := create_tween()
@@ -91,7 +100,22 @@ func _takeDamage(dmg:int) -> void:
 	await get_tree().create_timer(0.2).timeout
 	hand.modulate = c
 	
+	screenShake()
+	
 	#deal damage
 	enemyHealth -= dmg
 	if enemyHealth <= 0:
 		dead = true
+		
+func screenShake() -> void:
+	if not playerCamera:
+		return
+		
+	if playerCamera.has_method("applyShake"):
+		playerCamera.applyShake()
+
+
+func _on_hurtbox_body_entered(body: Node2D) -> void:
+	if body == player:
+		if player.has_method('takeDamage'):
+			player.takeDamage()
