@@ -9,6 +9,7 @@
 script = ExtResource("1_64x3d")
 
 [node name="bkg" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_npjki")
 
 [node name="Enemy" parent="." node_paths=PackedStringArray("player") instance=ExtResource("2_fmqdt")]
@@ -20,6 +21,6 @@ player = NodePath("../Player")
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
-position = Vector2(-68, -24)
+position = Vector2(191, -149)
 scale = Vector2(2.44375, 2.27256)
-polygon = PackedVector2Array(-196.419, -114.408, 251.253, -113.528, 251.253, 137.73, -191.509, 136.85, -191.509, 152.251, 262.302, 151.811, 262.302, -130.249, -207.059, -129.809, -206.24, 152.251, -195.192, 145.651, -196.419, 151.371)
+polygon = PackedVector2Array(-189.872, 2.20016, 32.7366, 1.76013, 33.1458, 129.809, -192.737, 127.169, -193.964, 150.931, 44.1944, 149.611, 40.5115, -7.04051, -196.01, -5.72041, -199.693, 124.089, -192.737, 125.849)

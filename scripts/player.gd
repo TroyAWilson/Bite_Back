@@ -13,6 +13,17 @@ enum State {IDLE, ATTACKING, RUNNING, DEAD} #maybe add damaged later
 var currentState = State.IDLE
 var lastDirection : Vector2 #might be unnecessary
 
+
+@export var afterImageScene : PackedScene
+var afterImageInterval := 0.35
+var dashing := false
+var canDash := true
+var dashCooldown := 0.35
+var dashDir := Vector2.ZERO
+var dashTime := 0.2
+var dashSpeed := 520
+var afterImageTimer := 0.0
+
 func _ready() -> void:
 	pass
 
@@ -46,7 +57,17 @@ func _physics_process(delta: float) -> void:
 		await AP.animation_finished
 		currentState = State.IDLE
 		
-	if dir_input:
+	if dir_input and Input.is_action_just_pressed("ui_accept") and canDash:
+		dash(dir_input)
+		
+	if dashing:
+		afterImageTimer -= delta
+		if afterImageTimer <= 0.0:
+			spawnAfterImage()
+			afterImageTimer = afterImageInterval
+		velocity = dashDir * dashSpeed
+		
+	if dir_input and not dashing:
 		if not AudioController.sfx_player.playing:
 			AudioController.playFootsteps()
 		currentState = State.RUNNING
@@ -90,6 +111,27 @@ func _physics_process(delta: float) -> void:
 
 func playAnimation(animation: String) -> void:
 	AP.play(animation)
+
+func dash(dir_input: Vector2) -> void:
+	if dir_input == Vector2.ZERO:
+		return
+	
+	dashing = true	
+	canDash = false
+	dashDir = dir_input.normalized()
+	afterImageTimer = 0.0
+	await get_tree().create_timer(dashTime).timeout
+	dashing = false
+	
+	await get_tree().create_timer(dashCooldown).timeout
+	canDash = true
+
+func spawnAfterImage() -> void:
+	for i in range(3):
+		var ghost = afterImageScene.instantiate()
+		get_tree().current_scene.add_child(ghost)
+		ghost.setup(playerSprite)
+		await get_tree().create_timer(0.1).timeout
 
 func _on_hurtbox_body_entered(body: Node2D) -> void:
 	if body.has_method('_takeDamage'):
