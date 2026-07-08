@@ -46,6 +46,9 @@ func _physics_process(delta: float) -> void:
 			dir_input = lastDirection
 		
 		match dir_input:
+			Vector2(0,1):
+				playAnimation('attack_D')
+				AudioController.play_swing()
 			Vector2(1,0):
 				playAnimation('attack_R')
 				AudioController.play_swing()
@@ -86,15 +89,15 @@ func _physics_process(delta: float) -> void:
 				dust.emitting = true
 				dust.position.x = -10
 				dust.process_material.gravity = Vector3(-50,0,0)
-				if not playerSprite.flip_h:
-					playerSprite.flip_h = true
+				#if not playerSprite.flip_h:
+					#playerSprite.flip_h = true
 				playAnimation('run_right')
 			Vector2(-1,0):
 				dust.emitting = true
 				dust.position.x = 10
 				dust.process_material.gravity = Vector3(50,0,0)
-				if playerSprite.flip_h:
-					playerSprite.flip_h = false	
+				#if playerSprite.flip_h:
+					#playerSprite.flip_h = false	
 				playAnimation('run_left')
 		
 		velocity = dir_input.normalized() * SPEED

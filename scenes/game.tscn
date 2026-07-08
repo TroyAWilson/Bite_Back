@@ -1,19 +1,18 @@
 [gd_scene load_steps=5 format=3 uid="uid://d2obfa0htcxf5"]
 
-[ext_resource type="Script" path="res://scenes/game.gd" id="1_64x3d"]
+[ext_resource type="Script" path="res://scripts/game.gd" id="1_64x3d"]
 [ext_resource type="PackedScene" uid="uid://bll48klk0a8e4" path="res://scenes/player.tscn" id="1_cp4mx"]
+[ext_resource type="Texture2D" uid="uid://bisc4jxai0s84" path="res://sprites/bkg_new.png" id="2_eym1y"]
 [ext_resource type="PackedScene" uid="uid://h628nnvux3cw" path="res://scenes/enemy.tscn" id="2_fmqdt"]
-[ext_resource type="Texture2D" uid="uid://b1rvhjdcuxprt" path="res://sprites/bkg.png" id="2_npjki"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_64x3d")
 
 [node name="bkg" type="Sprite2D" parent="."]
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("2_npjki")
+texture = ExtResource("2_eym1y")
 
 [node name="Enemy" parent="." node_paths=PackedStringArray("player") instance=ExtResource("2_fmqdt")]
-position = Vector2(75, -61)
+position = Vector2(104, -55)
 player = NodePath("../Player")
 
 [node name="Player" parent="." instance=ExtResource("1_cp4mx")]
@@ -21,6 +20,6 @@ player = NodePath("../Player")
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
-position = Vector2(191, -149)
+position = Vector2(158, -88)
 scale = Vector2(2.44375, 2.27256)
-polygon = PackedVector2Array(-189.872, 2.20016, 32.7366, 1.76013, 33.1458, 129.809, -192.737, 127.169, -193.964, 150.931, 44.1944, 149.611, 40.5115, -7.04051, -196.01, -5.72041, -199.693, 124.089, -192.737, 125.849)
+polygon = PackedVector2Array(-196.419, 0.88007, 66.7008, 2.20017, 67.11, 118.369, -195.192, 117.929, -195.192, 133.77, 78.5678, 134.21, 74.0665, -18.0413, -203.376, -17.6013, -208.696, 118.809, -196.01, 117.929)

@@ -76,6 +76,8 @@ func _slam() -> void:
 	
 	var slam_tween := create_tween()
 	slam_tween.tween_property(hand, "position:y", 0, 0.08)
+	slam_tween.tween_property(hand,  "modulate:a", 1.0, 0.1)
+	
 	AP.play('slam')
 	screenShake() 
 	await AP.animation_finished
@@ -85,6 +87,7 @@ func _retract() -> void:
 	var tween := create_tween()
 	
 	tween.tween_property(hand, "position:y", -300, 0.25)
+	tween.tween_property(hand,  "modulate:a", 0.0, 1.0)
 	
 	col.disabled = true
 	
