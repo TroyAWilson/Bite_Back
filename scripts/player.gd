@@ -9,7 +9,7 @@ const SPEED = 300.0
 @onready var youDied2 := $you_died2
 @onready var restart := $Restart 
 
-enum State {IDLE, ATTACKING, RUNNING, DEAD} #maybe add damaged later
+enum State {IDLE, ATTACKING, RUNNING, DASHING, DEAD} #maybe add damaged later
 var currentState = State.IDLE
 var lastDirection : Vector2 #might be unnecessary
 
@@ -36,10 +36,12 @@ func _physics_process(delta: float) -> void:
 		return
 		
 	var dir_input = Input.get_vector("ui_left","ui_right","ui_up","ui_down")
-	lastDirection = dir_input
+	
+	if dir_input != Vector2.ZERO:
+		lastDirection = dir_input
 	
 	if Input.is_action_just_pressed("attack") and currentState != State.ATTACKING:
-		velocity = Vector2(0,0)
+		velocity = Vector2.ZERO
 		currentState = State.ATTACKING
 		
 		if not dir_input:
@@ -48,15 +50,15 @@ func _physics_process(delta: float) -> void:
 		match dir_input:
 			Vector2(0,1):
 				playAnimation('attack_D')
-				AudioController.play_swing()
+			Vector2(0,-1):
+				playAnimation('attack_U')
 			Vector2(1,0):
 				playAnimation('attack_R')
-				AudioController.play_swing()
 			Vector2(-1,0):
 				playAnimation('attack_L')
-				AudioController.play_swing()
 			_:
-				playAnimation('attack_L') #maybe if I have time add like a neural spin attk
+				playAnimation('attack_D') #maybe if I have time add like a neural spin attk
+		AudioController.play_swing()
 		await AP.animation_finished
 		currentState = State.IDLE
 		
@@ -89,26 +91,33 @@ func _physics_process(delta: float) -> void:
 				dust.emitting = true
 				dust.position.x = -10
 				dust.process_material.gravity = Vector3(-50,0,0)
-				#if not playerSprite.flip_h:
-					#playerSprite.flip_h = true
 				playAnimation('run_right')
 			Vector2(-1,0):
 				dust.emitting = true
 				dust.position.x = 10
 				dust.process_material.gravity = Vector3(50,0,0)
-				#if playerSprite.flip_h:
-					#playerSprite.flip_h = false	
 				playAnimation('run_left')
 		
 		velocity = dir_input.normalized() * SPEED
 	else:
+		print(lastDirection, dir_input)
+		match lastDirection:
+			Vector2(0,1):
+				playAnimation('idle')
+			Vector2(0,-1):
+				playAnimation('idle_U')
+			Vector2(1,0):
+				playAnimation('idle_R')
+			Vector2(-1,0):
+				playAnimation('idle_L')
+			_:
+				playAnimation('idle')
+		
 		AudioController.stop_sfx()
 		dust.emitting = false
 		currentState = State.IDLE
 		#Sort of arbitrarily using 2 here so that it slows faster
-		velocity = velocity.move_toward(Vector2.ZERO, SPEED * 10 * delta)
-		if velocity == Vector2(0,0):
-			playAnimation('idle')
+		velocity = velocity.move_toward(Vector2.ZERO, SPEED * 5 * delta)
 
 	move_and_slide()
 
@@ -118,6 +127,8 @@ func playAnimation(animation: String) -> void:
 func dash(dir_input: Vector2) -> void:
 	if dir_input == Vector2.ZERO:
 		return
+	
+	currentState = State.DASHING
 	
 	dashing = true	
 	canDash = false

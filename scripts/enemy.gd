@@ -17,10 +17,8 @@ var playerCamera : Camera2D
 
 func _ready() -> void:
 	playerCamera = player.get_node("Camera2D")
-	
 	hand.visible = false
 	shadow.modulate.a = 0.0
-	#_atk_loop()
 	start_attack()
 
 func _physics_process(delta: float) -> void:
@@ -36,10 +34,8 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector2.ZERO
 
 func _atk_loop() -> void:
-	while true:
-		if dead:
-			break
-		
+	looping = true
+	while not dead:
 		await get_tree().create_timer(8.0).timeout
 		start_attack()
 
@@ -105,7 +101,7 @@ func _takeDamage(dmg:int) -> void:
 	
 	screenShake()
 	
-	#deal damage
+	#damage
 	enemyHealth -= dmg
 	if enemyHealth <= 0:
 		dead = true
@@ -116,7 +112,6 @@ func screenShake() -> void:
 		
 	if playerCamera.has_method("applyShake"):
 		playerCamera.applyShake()
-
 
 func _on_hurtbox_body_entered(body: Node2D) -> void:
 	if body == player:

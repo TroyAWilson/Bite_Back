@@ -32,7 +32,6 @@ func play_slash() -> void:
 	play_sfx(slash)
 
 func play_swing() -> void:
-	print('swing')
 	play_sfx(swing, -10)
 	
 func stop_music() -> void:
