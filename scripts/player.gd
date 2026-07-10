@@ -8,6 +8,13 @@ const SPEED = 300.0
 @onready var youDied := $you_died
 @onready var youDied2 := $you_died2
 @onready var restart := $Restart 
+@onready var leftArrowSprite := $arrow_left
+@onready var rightArrowSprite := $arrow_right
+@onready var upArrowSprite := $arrow_up
+@onready var downArrowSprite := $arrow_down
+@onready var attackSprite := $x_button
+@onready var dashSprite := $space_bar
+
 
 enum State {IDLE, ATTACKING, RUNNING, DASHING, DEAD} #maybe add damaged later
 var currentState = State.IDLE
@@ -66,11 +73,15 @@ func _physics_process(delta: float) -> void:
 		dash(dir_input)
 		
 	if dashing:
+		playAnimation('dash_L')
 		afterImageTimer -= delta
 		if afterImageTimer <= 0.0:
 			spawnAfterImage()
 			afterImageTimer = afterImageInterval
 		velocity = dashDir * dashSpeed
+		move_and_slide()
+		return
+		
 		
 	if dir_input and not dashing:
 		if not AudioController.sfx_player.playing:
@@ -100,7 +111,6 @@ func _physics_process(delta: float) -> void:
 		
 		velocity = dir_input.normalized() * SPEED
 	else:
-		print(lastDirection, dir_input)
 		match lastDirection:
 			Vector2(0,1):
 				playAnimation('idle')
@@ -134,6 +144,9 @@ func dash(dir_input: Vector2) -> void:
 	canDash = false
 	dashDir = dir_input.normalized()
 	afterImageTimer = 0.0
+	
+
+	
 	await get_tree().create_timer(dashTime).timeout
 	dashing = false
 	
@@ -160,4 +173,23 @@ func takeDamage() -> void:
 	restart.visible = true
 
 func _on_restart_pressed() -> void:
+	GameController.resetPlayerChecks()
 	get_tree().reload_current_scene()
+	
+	
+#This idea isn't complete yet. I only have the one icon drawn but it seems to work.
+# I also need to have them disaprearing when all the actions are completed.
+func _updateCheckIcon(iconName: String) -> void:
+	match iconName:
+		"left":
+			leftArrowSprite.frame = 1
+		"right":
+			rightArrowSprite.frame = 1
+		"up":
+			upArrowSprite.frame = 1
+		"down":
+			downArrowSprite.frame = 1
+		"attack":
+			attackSprite.frame = 1
+		"dash":
+			dashSprite.frame = 1

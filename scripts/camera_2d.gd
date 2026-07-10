@@ -16,5 +16,9 @@ func _process(delta: float) -> void:
 func applyShake() -> void:
 	shakeStrength = randomStrength
 	
+func applyLongShake() -> void:
+	shakeStrength = randomStrength
+	shakeFade = 2.0
+	
 func randomOffset() -> Vector2:
 	return Vector2(rng.randf_range(-shakeStrength, shakeStrength), rng.randf_range(-shakeStrength, shakeStrength))

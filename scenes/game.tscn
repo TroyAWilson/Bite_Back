@@ -5,8 +5,9 @@
 [ext_resource type="Texture2D" uid="uid://bisc4jxai0s84" path="res://sprites/bkg_new.png" id="2_eym1y"]
 [ext_resource type="PackedScene" uid="uid://h628nnvux3cw" path="res://scenes/enemy.tscn" id="2_fmqdt"]
 
-[node name="Game" type="Node2D"]
+[node name="Game" type="Node2D" node_paths=PackedStringArray("player")]
 script = ExtResource("1_64x3d")
+player = NodePath("Player")
 
 [node name="bkg" type="Sprite2D" parent="."]
 texture = ExtResource("2_eym1y")

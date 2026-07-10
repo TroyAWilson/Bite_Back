@@ -11,23 +11,28 @@ const SPEED := 100
 
 var pursue := false
 var looping := false
-var enemyHealth := 10
+var enemyHealth := 1 #should be higher
 var dead := false
 var playerCamera : Camera2D
+var completedInitialAttack := false
 
 func _ready() -> void:
 	playerCamera = player.get_node("Camera2D")
 	hand.visible = false
 	shadow.modulate.a = 0.0
-	start_attack()
+	#start_attack()
 
 func _physics_process(delta: float) -> void:
 	if dead:
-		print('you win')
+		return
+	
+	if GameController.playerReady and not completedInitialAttack:
+		completedInitialAttack = true
+		await get_tree().create_timer(1).timeout
+		start_attack()
 	
 	if pursue:
 		var dir = (player.global_position - global_position).normalized()
-		
 		velocity = dir * SPEED
 		move_and_slide()
 	else:
@@ -42,7 +47,6 @@ func _atk_loop() -> void:
 func start_attack() -> void:
 	if dead:
 		return	
-	
 	pursue = true
 	
 	var playerLocation = player.global_position
@@ -55,7 +59,7 @@ func start_attack() -> void:
 
 	tween.tween_callback(_slam)
 	tween.tween_interval(3.0)
-	
+
 	tween.tween_callback(_retract)
 	tween.tween_interval(0.7)
 	
@@ -91,7 +95,6 @@ func _retract() -> void:
 	tween.parallel().tween_property(shadow, "scale", Vector2(0.0, 0.0), 1.0)
 
 func _takeDamage(dmg:int) -> void:
-	
 	#color the hand
 	var c = hand.modulate
 	var tween = create_tween()
@@ -104,7 +107,20 @@ func _takeDamage(dmg:int) -> void:
 	#damage
 	enemyHealth -= dmg
 	if enemyHealth <= 0:
-		dead = true
+		_die()
+		
+func _die() -> void:
+	dead = true
+	pursue = false
+	velocity = Vector2.ZERO
+	col.disabled = true
+	print('enemy die!')
+	#screenShake()
+	playerCamera.applyLongShake()
+	AP.play("die")
+	await AP.animation_finished
+	
+	queue_free()
 		
 func screenShake() -> void:
 	if not playerCamera:

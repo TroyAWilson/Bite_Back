@@ -16,7 +16,7 @@ func setup(source_sprite: Sprite2D):
 	sprite.flip_v = source_sprite.flip_v
 	sprite.hframes = source_sprite.hframes
 	sprite.vframes = source_sprite.vframes
-	sprite.frame = source_sprite.frame
+	sprite.frame = source_sprite.frame 
 
 
 	sprite.modulate = Color(0.4, 0.8, 1.0, 0.45)

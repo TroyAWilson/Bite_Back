@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://h628nnvux3cw"]
+[gd_scene load_steps=11 format=3 uid="uid://h628nnvux3cw"]
 
 [ext_resource type="Script" path="res://scripts/enemy.gd" id="1_goghg"]
 [ext_resource type="Texture2D" uid="uid://cd78su3q0in7a" path="res://sprites/shadow.png" id="1_lahpd"]
@@ -93,9 +93,26 @@ tracks/1/keys = {
 "values": [false, true]
 }
 
+[sub_resource type="Animation" id="Animation_53p5q"]
+resource_name = "die"
+length = 3.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("hand:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.43333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [6, 7]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_q182u"]
 _data = {
 "RESET": SubResource("Animation_7f5y6"),
+"die": SubResource("Animation_53p5q"),
 "idle": SubResource("Animation_ocmx5"),
 "slam": SubResource("Animation_l2jbh")
 }
@@ -112,7 +129,7 @@ z_index = 5
 position = Vector2(2, -22)
 scale = Vector2(3, 3)
 texture = ExtResource("2_spmrs")
-hframes = 6
+hframes = 8
 
 [node name="hurtbox" type="Area2D" parent="."]
 
