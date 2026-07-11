@@ -8,19 +8,21 @@ const SPEED = 300.0
 @onready var youDied := $you_died
 @onready var youDied2 := $you_died2
 @onready var restart := $Restart 
-@onready var leftArrowSprite := $arrow_left
-@onready var rightArrowSprite := $arrow_right
-@onready var upArrowSprite := $arrow_up
-@onready var downArrowSprite := $arrow_down
-@onready var attackSprite := $x_button
-@onready var dashSprite := $space_bar
-
+@onready var youWin := $you_win
+@onready var leftArrowSprite := $Control/arrow_left
+@onready var rightArrowSprite := $Control/arrow_right
+@onready var upArrowSprite := $Control/arrow_up
+@onready var downArrowSprite := $Control/arrow_down
+@onready var attackSprite := $Control/x_button
+@onready var dashSprite := $Control/space_bar
+@onready var controlContainer := $Control
 
 enum State {IDLE, ATTACKING, RUNNING, DASHING, DEAD} #maybe add damaged later
 var currentState = State.IDLE
 var lastDirection : Vector2 #might be unnecessary
+var playerHasControl := true
 
-
+#dashing vars
 @export var afterImageScene : PackedScene
 var afterImageInterval := 0.35
 var dashing := false
@@ -35,7 +37,12 @@ func _ready() -> void:
 	pass
 
 func _physics_process(delta: float) -> void:
+	if playerHasControl == false:
+		dust.emitting = false
+		return
+	
 	if currentState == State.DEAD:
+		dust.emitting = false
 		return
 	
 	if currentState == State.ATTACKING:
@@ -73,7 +80,14 @@ func _physics_process(delta: float) -> void:
 		dash(dir_input)
 		
 	if dashing:
-		playAnimation('dash_L')
+		match dir_input:
+			Vector2(0,-1):
+				playAnimation('dash_U')
+			Vector2(-1,0):
+				playAnimation('dash_L')
+			Vector2(1,0):
+				playAnimation('dash_R')	
+				
 		afterImageTimer -= delta
 		if afterImageTimer <= 0.0:
 			spawnAfterImage()
@@ -145,8 +159,6 @@ func dash(dir_input: Vector2) -> void:
 	dashDir = dir_input.normalized()
 	afterImageTimer = 0.0
 	
-
-	
 	await get_tree().create_timer(dashTime).timeout
 	dashing = false
 	
@@ -193,3 +205,9 @@ func _updateCheckIcon(iconName: String) -> void:
 			attackSprite.frame = 1
 		"dash":
 			dashSprite.frame = 1
+	
+	#hide controls after they are all pressed
+	if GameController.playerCheck():
+		controlContainer.visible = false
+	elif not controlContainer.visible and not GameController.playerCheck():
+		controlContainer.visible = true

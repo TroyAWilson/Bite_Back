@@ -7,14 +7,16 @@ extends CharacterBody2D
 @onready var col := $CollisionShape2D
 @onready var AP := $AnimationPlayer
 
-const SPEED := 100
+var SPEED := 200
 
 var pursue := false
 var looping := false
-var enemyHealth := 1 #should be higher
+var enemyHealth := 1 # should be atleast 10
 var dead := false
 var playerCamera : Camera2D
 var completedInitialAttack := false
+
+const handPosition = -200
 
 func _ready() -> void:
 	playerCamera = player.get_node("Camera2D")
@@ -33,6 +35,9 @@ func _physics_process(delta: float) -> void:
 	
 	if pursue:
 		var dir = (player.global_position - global_position).normalized()
+		if dir == Vector2.ZERO:
+			return
+		print(dir)
 		velocity = dir * SPEED
 		move_and_slide()
 	else:
@@ -47,6 +52,10 @@ func _atk_loop() -> void:
 func start_attack() -> void:
 	if dead:
 		return	
+	
+	if enemyHealth <= int(enemyHealth/2) and SPEED < 250:
+		SPEED = 250
+	
 	pursue = true
 	
 	var playerLocation = player.global_position
@@ -70,12 +79,12 @@ func _slam() -> void:
 	pursue = false
 	
 	hand.visible = true
-	hand.position.y = -300
+	hand.position.y = handPosition
 	
 	col.disabled = false
 	
 	var slam_tween := create_tween()
-	slam_tween.tween_property(hand, "position:y", 0, 0.08)
+	slam_tween.tween_property(hand, "position:y", -25, 0.08)
 	slam_tween.tween_property(hand,  "modulate:a", 1.0, 0.1)
 	
 	AP.play('slam')
@@ -86,7 +95,7 @@ func _slam() -> void:
 func _retract() -> void:
 	var tween := create_tween()
 	
-	tween.tween_property(hand, "position:y", -300, 0.25)
+	tween.tween_property(hand, "position:y", handPosition, 0.25)
 	tween.tween_property(hand,  "modulate:a", 0.0, 1.0)
 	
 	col.disabled = true
@@ -110,15 +119,31 @@ func _takeDamage(dmg:int) -> void:
 		_die()
 		
 func _die() -> void:
+	player.playAnimation('idle')
+	
+	
 	dead = true
 	pursue = false
 	velocity = Vector2.ZERO
 	col.disabled = true
-	print('enemy die!')
-	#screenShake()
-	playerCamera.applyLongShake()
+	playerCamera.applyLongShake() #might need to make this shake slightly less
+	AudioController.stop_music()
+	player.playerHasControl = false
+	Engine.time_scale = 0.5
+	AudioController.playBossDie()
+	
 	AP.play("die")
 	await AP.animation_finished
+	
+	Engine.time_scale = 1
+	player.playAnimation('victory')
+	
+	player.youWin.visible = true
+	player.restart.visible = true
+	AudioController.play_music(AudioController.victory)
+	#TODO I'd love a little spin and thumbs up animation of the player
+	
+	
 	
 	queue_free()
 		

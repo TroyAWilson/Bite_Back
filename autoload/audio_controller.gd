@@ -6,7 +6,9 @@ var sfx_player : AudioStreamPlayer
 const bkg := preload("res://audio/DavidKBD - Pink Bloom Pack - 02 - Portal to Underworld.ogg")
 const slash := preload("res://audio/slash.mp3")
 const swing := preload("res://audio/swing.mp3")
-var steps := preload("res://audio/steps.mp3")
+const steps := preload("res://audio/steps.mp3")
+const bossDie := preload("res://audio/BossDieSound.mp3")
+const victory := preload("res://audio/victory.mp3")
 
 func _ready() -> void:
 	music_player = AudioStreamPlayer.new()
@@ -37,7 +39,21 @@ func play_swing() -> void:
 func stop_music() -> void:
 	music_player.stop()
 	
+func playBossDie() -> AudioStreamPlayer:
+	var player := AudioStreamPlayer.new()
+	
+	player.stream = bossDie
+	player.volume_db = -10
+	player.bus = "SFX"
+	
+	add_child(player)
+	
+	player.finished.connect(player.queue_free)
+	player.play()
+	return player
+	
 func play_sfx(stream: AudioStream, volume : float = -30.0) -> void:
+	print('playing sfx', stream, volume)
 	stream.loop = false
 	
 	sfx_player.stream = stream

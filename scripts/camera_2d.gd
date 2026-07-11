@@ -18,7 +18,7 @@ func applyShake() -> void:
 	
 func applyLongShake() -> void:
 	shakeStrength = randomStrength
-	shakeFade = 2.0
+	shakeFade = 3 #higher value, shorter shake
 	
 func randomOffset() -> Vector2:
 	return Vector2(rng.randf_range(-shakeStrength, shakeStrength), rng.randf_range(-shakeStrength, shakeStrength))

@@ -23,3 +23,9 @@ func resetPlayerChecks() -> void:
 	leftCheck = false
 	dashCheck = false
 	attackCheck = false
+	
+func playerCheck() -> bool:
+	if downCheck and upCheck and rightCheck and leftCheck and attackCheck and dashCheck:
+		return true
+	else: 
+		return false
