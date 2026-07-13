@@ -53,7 +53,6 @@ func playBossDie() -> AudioStreamPlayer:
 	return player
 	
 func play_sfx(stream: AudioStream, volume : float = -30.0) -> void:
-	print('playing sfx', stream, volume)
 	stream.loop = false
 	
 	sfx_player.stream = stream

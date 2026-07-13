@@ -6,74 +6,81 @@ extends CharacterBody2D
 @onready var hand := $hand
 @onready var col := $CollisionShape2D
 @onready var AP := $AnimationPlayer
+@onready var dangerZone := $dangerZone
 
-var SPEED := 200
+var SPEED := 100
 
 var pursue := false
 var looping := false
-var enemyHealth := 1 # should be atleast 10
+var enemyHealth := 10 # should be atleast 10
 var dead := false
 var playerCamera : Camera2D
 var completedInitialAttack := false
 
 const handPosition = -200
 
+enum State {IDLE, ATTACKING, DEAD, PHASE2}
+var enemyState = State.IDLE
+var phase2 = false
+var intervalSpeed = 2.0
+
 func _ready() -> void:
 	playerCamera = player.get_node("Camera2D")
 	hand.visible = false
 	shadow.modulate.a = 0.0
-	#start_attack()
+	col.disabled = true
 
 func _physics_process(delta: float) -> void:
-	if dead:
+	if dead or enemyState == State.DEAD:
+
 		return
-	
-	if GameController.playerReady and not completedInitialAttack:
-		completedInitialAttack = true
-		await get_tree().create_timer(1).timeout
+		
+	if GameController.playerReady and enemyState != State.ATTACKING:
+		await get_tree().create_timer(intervalSpeed).timeout
 		start_attack()
 	
 	if pursue:
 		var dir = (player.global_position - global_position).normalized()
 		if dir == Vector2.ZERO:
 			return
-		print(dir)
 		velocity = dir * SPEED
 		move_and_slide()
 	else:
 		velocity = Vector2.ZERO
 
-func _atk_loop() -> void:
-	looping = true
-	while not dead:
-		await get_tree().create_timer(8.0).timeout
-		start_attack()
-
-func start_attack() -> void:
-	if dead:
-		return	
+func start_attack() -> void:	
+	if dead or enemyState == State.DEAD or enemyState == State.ATTACKING:
+		return
+	else:
+		enemyState = State.ATTACKING
 	
-	if enemyHealth <= int(enemyHealth/2) and SPEED < 250:
-		SPEED = 250
-	
-	pursue = true
-	
-	var playerLocation = player.global_position
-	global_position = playerLocation
-	
+	var atk := 0
 	var tween := create_tween()
 	
-	tween.tween_property(shadow, "modulate:a", 0.65, 1.0)
-	tween.parallel().tween_property(shadow, "scale", Vector2(2.0, 2.0), 2.0)
-
-	tween.tween_callback(_slam)
-	tween.tween_interval(3.0)
-
-	tween.tween_callback(_retract)
-	tween.tween_interval(0.7)
+	if phase2:
+		atk = randi_range(0,1)
+		intervalSpeed = 1.0
 	
-	if not looping:
-		_atk_loop()
+	match atk:
+		0:
+			col.disabled = true
+			pursue = true
+			tween.tween_property(shadow, "modulate:a", 0.65, 1.0)
+			tween.parallel().tween_property(shadow, "scale", Vector2(2.0, 2.0), 2.0)
+			
+			tween.tween_callback(_slam)
+			tween.tween_interval(intervalSpeed)
+
+			tween.tween_callback(_retract)
+			tween.tween_interval(0.7)
+		1:
+			pursue = false
+			tween.tween_callback(_swipe)
+			tween.tween_interval(intervalSpeed)
+			
+	if enemyHealth <= 5 and SPEED < 130:
+		phase2 = true
+		SPEED = 130
 
 func _slam() -> void:
 	pursue = false
@@ -81,16 +88,49 @@ func _slam() -> void:
 	hand.visible = true
 	hand.position.y = handPosition
 	
-	col.disabled = false
-	
-	var slam_tween := create_tween()
-	slam_tween.tween_property(hand, "position:y", -25, 0.08)
-	slam_tween.tween_property(hand,  "modulate:a", 1.0, 0.1)
-	
 	AP.play('slam')
 	screenShake() 
 	await AP.animation_finished
 	AP.play('idle')
+	await get_tree().create_timer(2).timeout	
+	enemyState = State.IDLE
+	
+func _swipe() -> void:
+	pursue = false
+	
+	var AorB = randi_range(0,1)
+	var dangerSign
+	var swipeAnim
+	position = Vector2.ZERO
+	match AorB:
+		0:
+			dangerSign = player.get_node("dangerA")
+			swipeAnim = "swipeA"
+			dangerZone.position.y = 80
+		1:
+			dangerSign = player.get_node("dangerB")
+			swipeAnim = "swipeB"
+			dangerZone.position.y = -60
+			
+	print(dangerZone.position)
+	print(hand.position)
+	print(position)
+	var swipe_tween := create_tween()
+	swipe_tween.tween_property(hand,  "modulate:a", 1.0, 0.1)
+	#hand.visible = true
+	
+	#danger sign
+	dangerSign.visible = true
+	dangerZone.visible = true
+	await get_tree().create_timer(1.5).timeout
+	dangerZone.visible = false
+	dangerSign.visible = false
+	
+	#hand.position = Vector2.ZERO
+	AP.play(swipeAnim)
+	await AP.animation_finished
+	hand.visible = false
+	enemyState = State.IDLE
 	
 func _retract() -> void:
 	var tween := create_tween()
@@ -121,6 +161,10 @@ func _takeDamage(dmg:int) -> void:
 func _die() -> void:
 	player.playAnimation('idle')
 	
+	for tween in get_tree().get_processed_tweens():
+		print(tween)
+		if tween.is_valid():
+				tween.kill()
 	
 	dead = true
 	pursue = false
@@ -139,6 +183,8 @@ func _die() -> void:
 	player.playAnimation('victory')
 	
 	player.youWin.visible = true
+	player.youWin2.visible = true
+	
 	player.restart.visible = true
 	AudioController.play_music(AudioController.victory)
 	#TODO I'd love a little spin and thumbs up animation of the player

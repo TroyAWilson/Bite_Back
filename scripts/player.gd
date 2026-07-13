@@ -9,6 +9,7 @@ const SPEED = 300.0
 @onready var youDied2 := $you_died2
 @onready var restart := $Restart 
 @onready var youWin := $you_win
+@onready var youWin2 := $you_win2
 @onready var leftArrowSprite := $Control/arrow_left
 @onready var rightArrowSprite := $Control/arrow_right
 @onready var upArrowSprite := $Control/arrow_up
