@@ -44,14 +44,15 @@ func _physics_process(delta: float) -> void:
 	
 	if currentState == State.DEAD:
 		dust.emitting = false
+		if Input.is_action_just_pressed("dash"):
+			get_tree().reload_current_scene()
 		return
 	
 	if currentState == State.ATTACKING:
 		dust.emitting = false
 		return
 		
-	var dir_input = Input.get_vector("ui_left","ui_right","ui_up","ui_down")
-	
+	var dir_input = round(Input.get_vector("move_left","move_right","move_up","move_down"))
 	if dir_input != Vector2.ZERO:
 		lastDirection = dir_input
 	
@@ -77,7 +78,7 @@ func _physics_process(delta: float) -> void:
 		await AP.animation_finished
 		currentState = State.IDLE
 		
-	if dir_input and Input.is_action_just_pressed("ui_accept") and canDash:
+	if dir_input and Input.is_action_just_pressed("dash") and canDash:
 		dash(dir_input)
 		
 	if dashing:
@@ -87,7 +88,8 @@ func _physics_process(delta: float) -> void:
 			Vector2(-1,0):
 				playAnimation('dash_L')
 			Vector2(1,0):
-				playAnimation('dash_R')	
+				playAnimation('dash_R')
+			#Down is already default
 				
 		afterImageTimer -= delta
 		if afterImageTimer <= 0.0:
@@ -180,6 +182,7 @@ func _on_hurtbox_body_entered(body: Node2D) -> void:
 		
 func takeDamage() -> void:
 	currentState = State.DEAD
+	AudioController.play_music(AudioController.defeat)
 	playAnimation('die')
 	youDied.visible = true
 	youDied2.visible = true

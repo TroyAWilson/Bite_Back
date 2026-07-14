@@ -5,6 +5,7 @@ extends CharacterBody2D
 @onready var shadow := $shadow
 @onready var hand := $hand
 @onready var col := $CollisionShape2D
+@onready var hurtbox := $hurtbox/CollisionShape2D
 @onready var AP := $AnimationPlayer
 @onready var dangerZone := $dangerZone
 
@@ -31,10 +32,15 @@ func _ready() -> void:
 	col.disabled = true
 
 func _physics_process(delta: float) -> void:
+	
+	#if Input.is_action_just_pressed("attack"):
+		#_swipe2()
+	
+	
 	if dead or enemyState == State.DEAD:
-
 		return
-		
+	if GameController.playerReady:
+		visible = true
 	if GameController.playerReady and enemyState != State.ATTACKING:
 		await get_tree().create_timer(intervalSpeed).timeout
 		start_attack()
@@ -75,7 +81,7 @@ func start_attack() -> void:
 			tween.tween_interval(0.7)
 		1:
 			pursue = false
-			tween.tween_callback(_swipe)
+			tween.tween_callback(_swipe2)
 			tween.tween_interval(intervalSpeed)
 			
 	if enemyHealth <= 5 and SPEED < 130:
@@ -95,6 +101,42 @@ func _slam() -> void:
 	await get_tree().create_timer(2).timeout	
 	enemyState = State.IDLE
 	
+func _swipe2() -> void:
+	#Reworked this to lock on to the player rather than be
+	# predefined locations
+	
+	hand.visible = true
+	hand.modulate.a = 1
+	hand.rotate(deg_to_rad(90))
+	hurtbox.disabled = false
+	dangerZone.visible = true
+	
+	pursue = false
+	enemyState = State.ATTACKING
+
+	var playerLocation = player.global_position
+	
+	hurtbox.global_position = Vector2(400, playerLocation.y)
+	hand.global_position = Vector2(400, playerLocation.y)
+	dangerZone.global_position = Vector2(-800, playerLocation.y -25)
+	
+	dangerZone.visible = true
+	await get_tree().create_timer(1).timeout
+	dangerZone.visible = false
+	
+	var tween = create_tween()
+	
+	tween.set_parallel(true)
+	tween.tween_property(hand, "global_position:x", -800, 1)
+	tween.tween_property(hurtbox, "global_position:x", -800, 1)
+	
+	await tween.finished
+	
+	dangerZone.visible = false
+	hurtbox.disabled = true
+	hand.rotate(deg_to_rad(-90))
+	enemyState = State.IDLE
+
 func _swipe() -> void:
 	pursue = false
 	
@@ -112,9 +154,6 @@ func _swipe() -> void:
 			swipeAnim = "swipeB"
 			dangerZone.position.y = -60
 			
-	print(dangerZone.position)
-	print(hand.position)
-	print(position)
 	var swipe_tween := create_tween()
 	swipe_tween.tween_property(hand,  "modulate:a", 1.0, 0.1)
 	#hand.visible = true
@@ -162,7 +201,6 @@ func _die() -> void:
 	player.playAnimation('idle')
 	
 	for tween in get_tree().get_processed_tweens():
-		print(tween)
 		if tween.is_valid():
 				tween.kill()
 	

@@ -34,7 +34,7 @@ texture = SubResource("PlaceholderTexture2D_g3bcl")
 texture = ExtResource("2_eym1y")
 
 [node name="Enemy" parent="." node_paths=PackedStringArray("player") instance=ExtResource("2_fmqdt")]
-position = Vector2(104, -55)
+position = Vector2(219, -80)
 player = NodePath("../Player")
 
 [node name="Player" parent="." instance=ExtResource("1_cp4mx")]

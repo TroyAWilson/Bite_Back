@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://h628nnvux3cw"]
+[gd_scene load_steps=16 format=3 uid="uid://h628nnvux3cw"]
 
 [ext_resource type="Script" path="res://scripts/enemy.gd" id="1_goghg"]
 [ext_resource type="Texture2D" uid="uid://cd78su3q0in7a" path="res://sprites/shadow.png" id="1_lahpd"]
@@ -133,6 +133,18 @@ tracks/9/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [true]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("dangerZone:position")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
 }
 
 [sub_resource type="Animation" id="Animation_53p5q"]
@@ -489,12 +501,65 @@ tracks/7/keys = {
 "values": [true]
 }
 
+[sub_resource type="Animation" id="Animation_o4l5x"]
+resource_name = "swipe2"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("dangerZone:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("hand:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("hand:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.5708]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("hand:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1362, 49), Vector2(-59, 49)]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_q182u"]
 _data = {
 "RESET": SubResource("Animation_7f5y6"),
 "die": SubResource("Animation_53p5q"),
 "idle": SubResource("Animation_ocmx5"),
 "slam": SubResource("Animation_l2jbh"),
+"swipe2": SubResource("Animation_o4l5x"),
 "swipeA": SubResource("Animation_8il2r"),
 "swipeB": SubResource("Animation_xgv3t")
 }
@@ -516,6 +581,7 @@ damping_min = 100.0
 damping_max = 300.0
 scale_min = 0.4
 scale_max = 1.2
+color = Color(0.55, 0.48, 0.38, 0.7)
 
 [node name="Enemy" type="CharacterBody2D"]
 script = ExtResource("1_goghg")
@@ -547,10 +613,17 @@ shape = SubResource("CapsuleShape2D_sco02")
 
 [node name="dangerZone" type="ColorRect" parent="."]
 visible = false
-offset_left = -679.0
-offset_top = 146.0
-offset_right = 617.0
-offset_bottom = 250.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -646.0
+offset_top = 30.0
+offset_right = 650.0
+offset_bottom = 134.0
+grow_horizontal = 2
+grow_vertical = 2
 color = Color(0.812789, 0, 0.0710967, 0.611765)
 metadata/_edit_use_anchors_ = true
 

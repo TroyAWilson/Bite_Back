@@ -6,7 +6,7 @@ func _ready() -> void:
 	AudioController.play_bkg()
 
 func _process(delta: float) -> void:
-	var dir_input = Input.get_vector("ui_left","ui_right","ui_up","ui_down")
+	var dir_input = round(Input.get_vector("move_left","move_right","move_up","move_down"))
 	match dir_input:
 		Vector2(0,1):
 			if not GameController.downCheck:

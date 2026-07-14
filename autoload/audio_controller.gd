@@ -9,6 +9,8 @@ const swing := preload("res://audio/swing.mp3")
 const steps := preload("res://audio/steps.mp3")
 const bossDie := preload("res://audio/BossDieSound.mp3")
 const victory := preload("res://audio/victory.mp3")
+const defeat := preload("res://audio/defeat.mp3")
+const menu := preload("res://audio/DavidKBD - Pink Bloom Pack - 08 - Lost Spaceship's Signal.ogg")
 
 func _ready() -> void:
 	music_player = AudioStreamPlayer.new()
@@ -17,12 +19,13 @@ func _ready() -> void:
 	add_child(music_player)
 	add_child(sfx_player)
 	
-func play_music(stream: AudioStream) -> void:
+func play_music(stream: AudioStream, volume : float = -25.0) -> void:
 	if music_player.stream == stream and music_player.playing:
 		return
 		
+	stream.loop = true
 	music_player.stream = stream
-	music_player.volume_db = -25.0
+	music_player.volume_db = volume
 	music_player.play()
 	
 func play_bkg() -> void:
