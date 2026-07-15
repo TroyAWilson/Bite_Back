@@ -37,7 +37,8 @@ texture = ExtResource("2_eym1y")
 position = Vector2(219, -80)
 player = NodePath("../Player")
 
-[node name="Player" parent="." instance=ExtResource("1_cp4mx")]
+[node name="Player" parent="." node_paths=PackedStringArray("enemy") instance=ExtResource("1_cp4mx")]
+enemy = NodePath("../Enemy")
 
 [node name="GPUParticles2D2" type="GPUParticles2D" parent="Player"]
 z_index = -5
@@ -51,6 +52,6 @@ visibility_rect = Rect2(-1000, -1000, 2000, 2000)
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
-position = Vector2(158, -88)
+position = Vector2(160, -105)
 scale = Vector2(2.44375, 2.27256)
-polygon = PackedVector2Array(-196.419, 0.88007, 66.7008, 2.20017, 67.11, 118.369, -195.192, 117.929, -195.192, 133.77, 78.5678, 134.21, 74.0665, -18.0413, -203.376, -17.6013, -208.696, 118.809, -196.01, 117.929)
+polygon = PackedVector2Array(-196.419, 0.88007, 65.4731, -0.440029, 65.4731, 123.209, -196.419, 122.769, -196.419, 126.289, 68.3376, 128.489, 74.0665, -18.0413, -203.376, -17.6013, -208.696, 118.809, -196.01, 119.689)

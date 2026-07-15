@@ -13,7 +13,7 @@ var SPEED := 100
 
 var pursue := false
 var looping := false
-var enemyHealth := 10 # should be atleast 10
+var enemyHealth := 15
 var dead := false
 var playerCamera : Camera2D
 var completedInitialAttack := false
@@ -23,6 +23,7 @@ const handPosition = -200
 enum State {IDLE, ATTACKING, DEAD, PHASE2}
 var enemyState = State.IDLE
 var phase2 = false
+var phase3 = false
 var intervalSpeed = 2.0
 
 func _ready() -> void:
@@ -32,11 +33,6 @@ func _ready() -> void:
 	col.disabled = true
 
 func _physics_process(delta: float) -> void:
-	
-	#if Input.is_action_just_pressed("attack"):
-		#_swipe2()
-	
-	
 	if dead or enemyState == State.DEAD:
 		return
 	if GameController.playerReady:
@@ -65,6 +61,9 @@ func start_attack() -> void:
 	
 	if phase2:
 		atk = randi_range(0,1)
+		intervalSpeed = 1.5
+	if phase3:
+		atk = randi_range(0,1)
 		intervalSpeed = 1.0
 	
 	match atk:
@@ -85,8 +84,12 @@ func start_attack() -> void:
 			tween.tween_interval(intervalSpeed)
 			
 	if enemyHealth <= 5 and SPEED < 130:
-		phase2 = true
+		phase3 = true
+		phase2 = false
 		SPEED = 130
+	elif enemyHealth <= 10 and SPEED < 115:
+		phase2 = true
+		SPEED = 115
 
 func _slam() -> void:
 	pursue = false
@@ -96,9 +99,10 @@ func _slam() -> void:
 	
 	AP.play('slam')
 	screenShake() 
+	AudioController.playSlam()
 	await AP.animation_finished
 	AP.play('idle')
-	await get_tree().create_timer(2).timeout	
+	await get_tree().create_timer(2).timeout
 	enemyState = State.IDLE
 	
 func _swipe2() -> void:
@@ -129,6 +133,7 @@ func _swipe2() -> void:
 	tween.set_parallel(true)
 	tween.tween_property(hand, "global_position:x", -800, 1)
 	tween.tween_property(hurtbox, "global_position:x", -800, 1)
+	AudioController.playWhoosh()
 	
 	await tween.finished
 	
@@ -222,15 +227,13 @@ func _die() -> void:
 	
 	player.youWin.visible = true
 	player.youWin2.visible = true
-	
 	player.restart.visible = true
-	AudioController.play_music(AudioController.victory)
-	#TODO I'd love a little spin and thumbs up animation of the player
-	
-	
-	
+	player.currentState = player.State.WIN
+	AudioController.stop_sfx()
+	AudioController.play_music(AudioController.victory, -25, false)
+
 	queue_free()
-		
+			
 func screenShake() -> void:
 	if not playerCamera:
 		return
@@ -240,5 +243,5 @@ func screenShake() -> void:
 
 func _on_hurtbox_body_entered(body: Node2D) -> void:
 	if body == player:
-		if player.has_method('takeDamage'):
+		if player.has_method('takeDamage') and player.currentState != player.State.DEAD:
 			player.takeDamage()

@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 const SPEED = 300.0
+@export var enemy : CharacterBody2D
 
 @onready var AP := $AnimationPlayer
 @onready var playerSprite := $Sprite2D
@@ -18,7 +19,7 @@ const SPEED = 300.0
 @onready var dashSprite := $Control/space_bar
 @onready var controlContainer := $Control
 
-enum State {IDLE, ATTACKING, RUNNING, DASHING, DEAD} #maybe add damaged later
+enum State {IDLE, ATTACKING, RUNNING, DASHING, DEAD, WIN} #maybe add damaged later
 var currentState = State.IDLE
 var lastDirection : Vector2 #might be unnecessary
 var playerHasControl := true
@@ -38,15 +39,22 @@ func _ready() -> void:
 	pass
 
 func _physics_process(delta: float) -> void:
+	if currentState == State.DEAD or currentState == State.WIN:
+		dust.emitting = false
+		if Input.is_action_just_pressed("dash"):
+			GameController.resetPlayerChecks()
+			get_tree().reload_current_scene()
+		return
+	
 	if playerHasControl == false:
 		dust.emitting = false
 		return
 	
-	if currentState == State.DEAD:
-		dust.emitting = false
-		if Input.is_action_just_pressed("dash"):
-			get_tree().reload_current_scene()
-		return
+	if (enemy.global_position - global_position).normalized().y > 0:
+		z_index = 0
+	else:
+		z_index = 6
+	
 	
 	if currentState == State.ATTACKING:
 		dust.emitting = false
@@ -182,8 +190,12 @@ func _on_hurtbox_body_entered(body: Node2D) -> void:
 		
 func takeDamage() -> void:
 	currentState = State.DEAD
-	AudioController.play_music(AudioController.defeat)
+	z_index=0
+	AudioController.playSplat()
 	playAnimation('die')
+	AudioController.play_music(AudioController.defeat)
+	AudioController.stop_sfx()
+	$genralColl.disabled = true
 	youDied.visible = true
 	youDied2.visible = true
 	restart.visible = true

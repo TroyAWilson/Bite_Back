@@ -11,6 +11,9 @@ const bossDie := preload("res://audio/BossDieSound.mp3")
 const victory := preload("res://audio/victory.mp3")
 const defeat := preload("res://audio/defeat.mp3")
 const menu := preload("res://audio/DavidKBD - Pink Bloom Pack - 08 - Lost Spaceship's Signal.ogg")
+const slam := preload("res://audio/slam.mp3")
+const whoosh := preload("res://audio/whoosh.mp3")
+const splat := preload("res://audio/splat.mp3")
 
 func _ready() -> void:
 	music_player = AudioStreamPlayer.new()
@@ -19,11 +22,11 @@ func _ready() -> void:
 	add_child(music_player)
 	add_child(sfx_player)
 	
-func play_music(stream: AudioStream, volume : float = -25.0) -> void:
+func play_music(stream: AudioStream, volume : float = -25.0, looping : bool = true) -> void:
 	if music_player.stream == stream and music_player.playing:
 		return
 		
-	stream.loop = true
+	stream.loop = looping
 	music_player.stream = stream
 	music_player.volume_db = volume
 	music_player.play()
@@ -47,6 +50,45 @@ func playBossDie() -> AudioStreamPlayer:
 	
 	player.stream = bossDie
 	player.volume_db = -10
+	player.bus = "SFX"
+	
+	add_child(player)
+	
+	player.finished.connect(player.queue_free)
+	player.play()
+	return player
+	
+func playSlam() -> AudioStreamPlayer:
+	var player := AudioStreamPlayer.new()
+	
+	player.stream = slam
+	player.volume_db = -15
+	player.bus = "SFX"
+	
+	add_child(player)
+	
+	player.finished.connect(player.queue_free)
+	player.play()
+	return player
+	
+func playWhoosh() -> AudioStreamPlayer:
+	var player := AudioStreamPlayer.new()
+	
+	player.stream = whoosh
+	player.volume_db = -15
+	player.bus = "SFX"
+	
+	add_child(player)
+	
+	player.finished.connect(player.queue_free)
+	player.play()
+	return player
+	
+func playSplat() -> AudioStreamPlayer:
+	var player := AudioStreamPlayer.new()
+	
+	player.stream = splat
+	player.volume_db = -15
 	player.bus = "SFX"
 	
 	add_child(player)

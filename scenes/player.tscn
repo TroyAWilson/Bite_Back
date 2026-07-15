@@ -119,6 +119,18 @@ tracks/7/keys = {
 "update": 1,
 "values": [10]
 }
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Sprite2D:z_index")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [6]
+}
 
 [sub_resource type="Animation" id="Animation_u0p0a"]
 resource_name = "attack_D"
@@ -295,6 +307,18 @@ tracks/6/keys = {
 "update": 1,
 "values": [15]
 }
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Sprite2D:z_index")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0, 0.35),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [6, 0]
+}
 
 [sub_resource type="Animation" id="Animation_twpa8"]
 resource_name = "attack_R"
@@ -395,6 +419,18 @@ tracks/7/keys = {
 "update": 1,
 "values": [15]
 }
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Sprite2D:z_index")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0, 0.35),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [6, 0]
+}
 
 [sub_resource type="Animation" id="Animation_pefmy"]
 resource_name = "attack_U"
@@ -470,6 +506,18 @@ tracks/5/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [15]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Sprite2D:z_index")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [6, 0]
 }
 
 [sub_resource type="Animation" id="Animation_ed5ef"]
@@ -1346,6 +1394,7 @@ texture = ExtResource("3_lmic4")
 lifetime = 0.8
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = 6
 position = Vector2(-10, 0)
 texture = ExtResource("2_cffoy")
 hframes = 15
